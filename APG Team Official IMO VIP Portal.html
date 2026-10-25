@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APG Team Official IMO VIP Portal & DP Studio</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tesseract OCR Library -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <style>
+        :root {
+            --primary: #FFD700;
+            --primary-dark: #b8860b;
+            --bg-dark: #090d16;
+            --card-bg: #111827;
+            --card-inner: #1f2937;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --gold-glow: rgba(255, 215, 0, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Announcement Ticker */
+        .ticker-wrap {
+            width: 100%;
+            background: linear-gradient(90deg, #92400e, #d97706, #92400e);
+            color: #fff;
+            padding: 8px 0;
+            overflow: hidden;
+            font-size: 0.82rem;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .ticker {
+            display: flex;
+            white-space: nowrap;
+            animation: ticker 25s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Top Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: rgba(17, 24, 39, 0.95);
+            border-bottom: 1px solid var(--gold-glow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .menu-btn {
+            font-size: 1.4rem;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .menu-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+        .brand {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Offcanvas Navigation Drawer */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 290px;
+            height: 100%;
+            background: var(--card-bg);
+            border-right: 1px solid var(--primary);
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.8);
+        }
+        .sidebar.active {
+            left: 0;
+        }
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 12px 14px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .sidebar-menu a:hover {
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--primary);
+        }
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            z-index: 999;
+            display: none;
+            backdrop-filter: blur(3px);
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 16px;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* Stats Bar */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--gold-glow);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-card i {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+        .stat-val {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        .stat-lbl {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Tab Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-btn {
+            background: var(--card-inner);
+            color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 11px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #000;
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px var(--gold-glow);
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--gold-glow);
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            position: relative;
+        }
+        .owner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 1px solid var(--primary);
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed var(--primary);
+            border-radius: 14px;
+            padding: 28px 15px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(255, 215, 0, 0.02);
+            margin-bottom: 18px;
+            transition: all 0.2s;
+        }
+        .upload-area:hover {
+            background: rgba(255, 215, 0, 0.06);
+            border-color: #ffe566;
+        }
+        .upload-area i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        #fileInput, #dpFileInput {
+            display: none;
+        }
+
+        /* Forms & Inputs */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+        .input-group {
+            margin-bottom: 16px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.83rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: #090d16;
+            color: #fff;
+            font-size: 0.92rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary);
+        }
+
+        /* Live Profile Mockup Box */
+        .imo-mockup {
+            background: #0f172a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .imo-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .imo-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #fff;
+            border: 2px solid var(--primary);
+        }
+        .imo-details {
+            flex: 1;
+            overflow: hidden;
+        }
+        .imo-name-line {
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .imo-status {
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 2px;
+        }
+
+        /* Result & Buttons */
+        .result-box {
+            background: #000;
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+        .result-text {
+            font-size: 0.88rem;
+            word-break: break-all;
+            color: #fff;
+            margin-bottom: 14px;
+            background: #111827;
+            padding: 14px;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+            line-height: 1.5;
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 500px) {
+            .btn-row { grid-template-columns: 1fr; }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #000;
+            font-weight: 700;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px var(--gold-glow);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn-secondary {
+            background: #1f2937;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: none;
+        }
+        .btn-secondary:hover {
+            background: #374151;
+        }
+
+        /* Canvas DP Editor */
+        .canvas-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        canvas {
+            max-width: 100%;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            box-shadow: 0 0 25px rgba(255,215,0,0.35);
+            background: #000;
+        }
+
+        /* AI Chatbot Interface */
+        .chat-box {
+            background: #090d16;
+            border-radius: 14px;
+            height: 340px;
+            overflow-y: auto;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+        .chat-msg {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .chat-msg.bot {
+            background: var(--card-inner);
+            color: var(--text-main);
+            border-left: 3px solid var(--primary);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .chat-msg.user {
+            background: var(--primary);
+            color: #000;
+            font-weight: 600;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        /* Modals & Admin Controls */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            max-width: 720px;
+            width: 100%;
+            padding: 24px;
+            max-height: 88vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 30px rgba(255,215,0,0.2);
+        }
+        .close-modal {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+        .close-modal:hover { color: #fff; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            text-align: left;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        th {
+            background: #000;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .img-thumb {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--primary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 22px;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            margin-top: auto;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            background: rgba(17,24,39,0.5);
+        }
+
+        /* Toast Popup */
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: var(--accent-green);
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 10px;
+            display: none;
+            z-index: 3000;
+            font-weight: 600;
+            font-size: 0.88rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Announcement Ticker -->
+    <div class="ticker-wrap">
+        <div class="ticker">
+            🌟 Welcome to APG Team Official IMO VIP Portal • Led by Owner Mr. Faiz Khan • Generate Official Signature Logos & Royal DPs Instantaneously 🌟
+        </div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-left">
+            <div class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></div>
+            <div class="brand"><i class="fa-solid fa-shield-halved"></i> APG TEAM™</div>
+        </div>
+        <div>
+            <select id="langSelect" onchange="changeLanguage()" style="background:#000; color:var(--primary); border:1px solid var(--primary); padding:6px 12px; border-radius:8px; font-size:0.82rem; font-weight:600; cursor:pointer;">
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Navigation Drawer Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand"><i class="fa-solid fa-shield-halved"></i> APG MENU</div>
+            <i class="fa-solid fa-xmark" onclick="toggleSidebar()" style="cursor:pointer; font-size:1.3rem; color:var(--text-muted);"></i>
+        </div>
+        <div class="sidebar-menu">
+            <a onclick="openModal('privacyModal'); toggleSidebar();"><i class="fa-solid fa-user-shield"></i> Privacy Policy</a>
+            <a onclick="openModal('termsModal'); toggleSidebar();"><i class="fa-solid fa-file-contract"></i> Terms & Conditions</a>
+            <a onclick="openModal('aboutModal'); toggleSidebar();"><i class="fa-solid fa-crown"></i> About APG Owner</a>
+        </div>
+    </div>
+
+    <!-- Main Content Portal -->
+    <div class="container">
+
+        <!-- Live Metrics Counter -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <div class="stat-val" id="statCreated">1,420+</div>
+                <div class="stat-lbl">Logos Created</div>
+            </div>
+            <div class="stat-card">
+                <i class="fa-solid fa-copy"></i>
+                <div class="stat-val" id="statCopied">3,890+</div>
+                <div class="stat-lbl">Times Copied</div>
+            </div>
+            <div class="stat-card">
+                <i class="fa-solid fa-bolt"></i>
+                <div class="stat-val">100%</div>
+                <div class="stat-lbl">Free & Instant</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('logoTab', this)"><i class="fa-solid fa-crown"></i> IMO Logo Generator</button>
+            <button class="tab-btn" onclick="switchTab('dpTab', this)"><i class="fa-solid fa-image"></i> Photo & Couple DP Studio</button>
+            <button class="tab-btn" onclick="switchTab('aiTab', this)"><i class="fa-solid fa-robot"></i> APG AI Chatbot</button>
+        </div>
+
+        <!-- TAB 1: IMO VIP LOGO GENERATOR -->
+        <div id="logoTab" class="tab-content active">
+            <div class="card">
+                <div class="owner-badge"><i class="fa-solid fa-crown"></i> OWNER: MR FAIZ KHAN</div>
+                <h2 id="logoTitle" style="font-size: 1.35rem; margin-bottom: 6px;">Official IMO VIP Logo Generator</h2>
+                <p id="logoSubtitle" style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 20px;">Upload profile screenshot for AI extraction or enter your name manually.</p>
+
+                <!-- Screenshot Scan Zone -->
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <h4 id="upTitle" style="font-size:1rem;">Upload IMO Profile Screenshot</h4>
+                    <p style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">AI OCR auto-extracts your details & logs them securely</p>
+                    <input type="file" id="fileInput" accept="image/*" onchange="processScreenshot(event)">
+                </div>
+                <div id="ocrStatus" style="display:none; text-align:center; color:var(--primary); font-size:0.85rem; margin-bottom:15px; font-weight:600;">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Reading IMO Screenshot... Please wait
+                </div>
+
+                <!-- Form Controls -->
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label id="lblPrefix">Gender / Role Prefix</label>
+                        <select id="prefixSelect" onchange="generateLogo()">
+                            <option value="MD">MD (Male Default)</option>
+                            <option value="MS">MS (Female)</option>
+                            <option value="VIP">VIP (Special)</option>
+                            <option value="NONE">None</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label id="lblYourName">Enter Member Name</label>
+                        <input type="text" id="userNameInput" placeholder="Enter name (e.g., Aman, Riya)" oninput="generateLogo()">
+                    </div>
+                </div>
+
+                <!-- Live IMO Profile Box Mockup -->
+                <div class="imo-mockup">
+                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600;"><i class="fa-solid fa-eye"></i> LIVE IMO PROFILE PREVIEW:</div>
+                    <div class="imo-header">
+                        <div class="imo-avatar"><i class="fa-solid fa-user"></i></div>
+                        <div class="imo-details">
+                            <div class="imo-name-line" id="mockupName">APG™ Logo Preview</div>
+                            <div class="imo-status"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> Online • APG Team Member</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Box -->
+                <div class="result-box">
+                    <label style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-bottom: 8px; font-weight:600;">Your Generated APG VIP Logo:</label>
+                    <div class="result-text" id="logoResultText">APG™➳⁠²⁰²⁶MD⁠˓⃝YourName˓⃝༺❤️༻✺◄❥⃟⫷]♻⃟◎͓̽⃝͓̽❥͓̽͜͡❂ཽ⃟.⃟♻{✮͜͡⃢♪.˓⃝✍APG˓⃝❤️˓⃝✍OWNER: MR FAIZ KHAN༻͓</div>
+                    
+                    <div class="btn-row">
+                        <button class="btn" onclick="copyText('logoResultText')"><i class="fa-solid fa-copy"></i> <span id="btnCopy">1-Click Copy</span></button>
+                        <button class="btn btn-secondary" onclick="openIMOApp()"><i class="fa-solid fa-paper-plane"></i> Open IMO App</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: CIRCULAR PHOTO & COUPLE DP STUDIO -->
+        <div id="dpTab" class="tab-content">
+            <div class="card">
+                <div class="owner-badge"><i class="fa-solid fa-compact-disc"></i> CIRCULAR DP EDITOR</div>
+                <h2 style="font-size: 1.35rem; margin-bottom: 6px;">APG Radial Photo & Couple DP Studio</h2>
+                <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 20px;">Upload your single image or Couple photo to wrap circular golden APG text around it.</p>
+
+                <div class="upload-area" onclick="document.getElementById('dpFileInput').click()">
+                    <i class="fa-solid fa-image"></i>
+                    <h4>Select Single Photo or Couple DP</h4>
+                    <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">Supports PNG, JPG & High-Res Images</p>
+                    <input type="file" id="dpFileInput" accept="image/*" onchange="loadDPImage(event)">
+                </div>
+
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Top Circular Text / Your Name</label>
+                        <input type="text" id="dpTopText" value="APG TEAM • MR FAIZ KHAN" oninput="drawDP()">
+                    </div>
+                    <div class="input-group">
+                        <label>Bottom Circular Text / Partner Name</label>
+                        <input type="text" id="dpBottomText" value="VIP MEMBER • 2026" oninput="drawDP()">
+                    </div>
+                </div>
+
+                <div class="canvas-container">
+                    <canvas id="dpCanvas" width="500" height="500"></canvas>
+                </div>
+
+                <button class="btn" onclick="downloadDP()"><i class="fa-solid fa-download"></i> Download HD Circular DP</button>
+            </div>
+        </div>
+
+        <!-- TAB 3: AI APG CHATBOT STUDIO -->
+        <div id="aiTab" class="tab-content">
+            <div class="card">
+                <div class="owner-badge"><i class="fa-solid fa-robot"></i> AI LOGO ASSISTANT</div>
+                <h2 style="font-size: 1.35rem; margin-bottom: 6px;">APG AI Chatbot Assistant</h2>
+                <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 15px;">Talk with AI to automatically generate personalized APG VIP Logos instantly.</p>
+
+                <div class="chat-box" id="chatBox">
+                    <div class="chat-msg bot">👋 Hello! I am the official APG AI Assistant. Type your name (e.g., "Rahul", "Aman & Riya") and I will generate your custom logo with a 1-click copy button!</div>
+                </div>
+
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Type your name or message here..." style="flex:1; padding:12px; border-radius:10px; background:#000; border:1px solid rgba(255,255,255,0.2); color:#fff; font-size:0.9rem;" onkeydown="if(event.key==='Enter') sendChatMessage()">
+                    <button class="btn" style="width:auto; padding:0 22px;" onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 APG Team. All rights reserved. Managed by Owner Mr. Faiz Khan.</p>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal" id="privacyModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('privacyModal')">&times;</span>
+            <h3 style="color: var(--primary); margin-bottom: 12px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-user-shield"></i> Privacy Policy</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">APG Team values user privacy. All uploaded profile screenshots are processed solely for extracting member names and maintaining internal verification databases. Your data is encrypted locally and never transferred to unauthorized third parties.</p>
+        </div>
+    </div>
+
+    <div class="modal" id="termsModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('termsModal')">&times;</span>
+            <h3 style="color: var(--primary); margin-bottom: 12px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-file-contract"></i> Terms & Conditions</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">By using this portal, members agree to follow community guidelines. Official branding elements and logo formats remain the exclusive property of APG Team led by Mr. Faiz Khan.</p>
+        </div>
+    </div>
+
+    <div class="modal" id="aboutModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('aboutModal')">&times;</span>
+            <h3 style="color: var(--primary); margin-bottom: 12px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-crown"></i> About APG Team</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">APG Team is a global online network managed by <strong>Mr. Faiz Khan</strong>. This web platform provides automated logo customization, circular DP design, and AI assistance for all community members.</p>
+        </div>
+    </div>
+
+    <!-- Master Admin Dashboard (#admin) -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('adminModal')">&times;</span>
+            
+            <div id="adminAuth">
+                <h3 style="color: var(--primary); text-align: center; margin-bottom: 18px; display:flex; align-items:center; justify-content:center; gap:10px;"><i class="fa-solid fa-lock"></i> Super Admin Master Login</h3>
+                <div class="input-group">
+                    <label>Master Username</label>
+                    <input type="text" id="adminUser" placeholder="Enter Username">
+                </div>
+                <div class="input-group">
+                    <label>Master Password</label>
+                    <input type="password" id="adminPass" placeholder="Enter Password">
+                </div>
+                <button class="btn" onclick="authenticateAdmin()">Login to Master Portal</button>
+            </div>
+
+            <div id="adminPanel" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap:wrap; gap:10px;">
+                    <h3 style="color: var(--primary);"><i class="fa-solid fa-database"></i> Master Database Dashboard</h3>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn" style="width: auto; padding: 6px 14px; font-size: 0.78rem; background: var(--accent-red); color: #fff; box-shadow:none;" onclick="clearAllData()">Clear All</button>
+                        <button class="btn" style="width: auto; padding: 6px 14px; font-size: 0.78rem; background: var(--accent-green); color: #fff; box-shadow:none;" onclick="exportCSV()">Export CSV</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="adminSearch" placeholder="Search by Name, Phone, or User ID..." onkeyup="filterAdminData()">
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Thumbnail</th>
+                                <th>Extracted Name</th>
+                                <th>Phone</th>
+                                <th>User ID</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast">Copied to Clipboard!</div>
+
+    <script>
+        // LocalStorage Database & State
+        let userDatabase = JSON.parse(localStorage.getItem('apg_master_db')) || [];
+        let loadedImg = null;
+        let logoCreatedCount = parseInt(localStorage.getItem('apg_created_count') || "1420");
+        let logoCopiedCount = parseInt(localStorage.getItem('apg_copied_count') || "3890");
+
+        // Initialization
+        window.addEventListener('load', () => {
+            updateStatsUI();
+            initCanvas();
+            if(window.location.hash === '#admin') {
+                openModal('adminModal');
+            }
+        });
+
+        window.addEventListener('hashchange', () => {
+            if(window.location.hash === '#admin') {
+                openModal('adminModal');
+            }
+        });
+
+        function updateStatsUI() {
+            document.getElementById('statCreated').innerText = logoCreatedCount.toLocaleString() + "+";
+            document.getElementById('statCopied').innerText = logoCopiedCount.toLocaleString() + "+";
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Logo Generation
+        function generateLogo() {
+            const prefixVal = document.getElementById('prefixSelect').value;
+            const prefixStr = prefixVal === "NONE" ? "" : prefixVal;
+            const name = document.getElementById('userNameInput').value.trim() || "YourName";
+            
+            const logo = `APG™➳⁠²⁰²⁶${prefixStr}⁠˓⃝${name}˓⃝༺❤️༻✺◄❥⃟⫷]♻⃟◎͓̽⃝͓̽❥͓̽͜͡❂ཽ⃟.⃟♻{✮͜͡⃢♪.˓⃝✍APG˓⃝❤️˓⃝✍OWNER: MR FAIZ KHAN༻͓`;
+            
+            document.getElementById('logoResultText').innerText = logo;
+            document.getElementById('mockupName').innerText = `APG™ ${prefixStr} ${name}`;
+
+            logoCreatedCount++;
+            localStorage.setItem('apg_created_count', logoCreatedCount);
+            updateStatsUI();
+        }
+
+        function copyText(elemId) {
+            const txt = document.getElementById(elemId).innerText;
+            
+            // Clipboard Fallback
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = txt;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+
+            logoCopiedCount++;
+            localStorage.setItem('apg_copied_count', logoCopiedCount);
+            updateStatsUI();
+
+            showToast("Official APG Logo Copied!");
+        }
+
+        function openIMOApp() {
+            window.location.href = "imo://";
+            setTimeout(() => {
+                showToast("Opening IMO App...");
+            }, 500);
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 2200);
+        }
+
+        // OCR Scanner Logic
+        function processScreenshot(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const status = document.getElementById('ocrStatus');
+            status.style.display = 'block';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgData = e.target.result;
+                Tesseract.recognize(imgData, 'eng').then(({ data: { text } }) => {
+                    status.style.display = 'none';
+                    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 2);
+                    const extractedName = lines[0] ? lines[0].replace(/[^a-zA-Z0-9\s]/g, '') : "APG Member";
+                    const phoneMatch = text.match(/(\+?\d{1,4}[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}/);
+                    const idMatch = text.match(/ID:\s*(\d+)/i) || text.match(/\b\d{8,10}\b/);
+
+                    const phone = phoneMatch ? phoneMatch[0] : "N/A";
+                    const uid = idMatch ? idMatch[0] : "N/A";
+
+                    document.getElementById('userNameInput').value = extractedName;
+                    generateLogo();
+
+                    userDatabase.push({
+                        photo: imgData,
+                        name: extractedName,
+                        phone: phone,
+                        userId: uid,
+                        timestamp: new Date().toLocaleString()
+                    });
+                    localStorage.setItem('apg_master_db', JSON.stringify(userDatabase));
+                    showToast("Screenshot Scanned & Logged!");
+                }).catch(() => {
+                    status.style.display = 'none';
+                    showToast("OCR Error. Enter details manually.");
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Canvas Circular DP Renderer
+        function initCanvas() {
+            const canvas = document.getElementById('dpCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(0, 0, 500, 500);
+            drawDP();
+        }
+
+        function loadDPImage(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    loadedImg = img;
+                    drawDP();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function drawDP() {
+            const canvas = document.getElementById('dpCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 500, 500);
+
+            // Draw Dark Background
+            ctx.fillStyle = "#090d16";
+            ctx.fillRect(0, 0, 500, 500);
+
+            // Circular Photo Clipping
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(250, 250, 210, 0, Math.PI * 2);
+            ctx.clip();
+            if(loadedImg) {
+                ctx.drawImage(loadedImg, 40, 40, 420, 420);
+            } else {
+                ctx.fillStyle = "#111827";
+                ctx.fillRect(0, 0, 500, 500);
+                ctx.fillStyle = "#FFD700";
+                ctx.font = "bold 24px Poppins";
+                ctx.textAlign = "center";
+                ctx.fillText("APG TEAM PHOTO DP", 250, 250);
+            }
+            ctx.restore();
+
+            // Outer Golden Glow Ring
+            ctx.beginPath();
+            ctx.arc(250, 250, 220, 0, Math.PI * 2);
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = "#FFD700";
+            ctx.shadowColor = "#FFD700";
+            ctx.shadowBlur = 20;
+            ctx.stroke();
+            ctx.shadowBlur = 0; // Reset
+
+            // Inner Decorative Ring
+            ctx.beginPath();
+            ctx.arc(250, 250, 205, 0, Math.PI * 2);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "rgba(255,255,255,0.4)";
+            ctx.stroke();
+
+            // Curved Top Text
+            const topText = document.getElementById('dpTopText').value.toUpperCase();
+            drawCurvedText(ctx, topText, 250, 250, 185, Math.PI * 1.5, true);
+
+            // Curved Bottom Text
+            const bottomText = document.getElementById('dpBottomText').value.toUpperCase();
+            drawCurvedText(ctx, bottomText, 250, 250, 185, Math.PI * 0.5, false);
+        }
+
+        function drawCurvedText(ctx, text, cx, cy, radius, startAngle, isTop) {
+            ctx.save();
+            ctx.font = "900 18px Poppins";
+            ctx.fillStyle = "#FFD700";
+            ctx.shadowColor = "#000";
+            ctx.shadowBlur = 8;
+            ctx.textAlign = "center";
+
+            const step = (Math.PI * 0.75) / Math.max(text.length, 1);
+            let angle = isTop ? startAngle - (step * text.length / 2) : startAngle + (step * text.length / 2);
+
+            for(let i = 0; i < text.length; i++) {
+                const ch = text[i];
+                ctx.save();
+                ctx.translate(cx + radius * Math.cos(angle), cy + radius * Math.sin(angle));
+                ctx.rotate(angle + (isTop ? Math.PI / 2 : -Math.PI / 2));
+                ctx.fillText(ch, 0, 0);
+                ctx.restore();
+                angle += isTop ? step : -step;
+            }
+            ctx.restore();
+        }
+
+        function downloadDP() {
+            const canvas = document.getElementById('dpCanvas');
+            const link = document.createElement('a');
+            link.download = 'APG_Royal_DP.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast("Downloading HD Circular DP...");
+        }
+
+        // AI Assistant
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `<div class="chat-msg user">${msg}</div>`;
+            input.value = "";
+
+            setTimeout(() => {
+                const cleanName = msg.replace(/make|logo|for|create|please/gi, '').trim() || "VIP";
+                const generatedLogo = `APG™➳⁠²⁰²⁶MD⁠˓⃝${cleanName}˓⃝༺❤️༻✺◄❥⃟⫷]♻⃟◎͓̽⃝͓̽❥͓̽͜͡❂ཽ⃟.⃟♻{✮͜͡⃢♪.˓⃝✍APG˓⃝❤️˓⃝✍OWNER: MR FAIZ KHAN༻͓`;
+                const idStr = 'ai_logo_' + Date.now();
+
+                chatBox.innerHTML += `
+                    <div class="chat-msg bot">
+                        ✨ Here is your customized APG VIP Logo for <strong>${cleanName}</strong>:<br><br>
+                        <div id="${idStr}" style="background:#000; padding:10px; border-radius:8px; border:1px solid var(--primary); font-size:0.8rem; word-break:break-all; color:#fff;">${generatedLogo}</div>
+                        <button class="btn" style="margin-top:10px; padding:6px 12px; font-size:0.75rem;" onclick="copyText('${idStr}')"><i class="fa-solid fa-copy"></i> Copy This Logo</button>
+                    </div>
+                `;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 600);
+        }
+
+        // Master Admin Functionality
+        function authenticateAdmin() {
+            const u = document.getElementById('adminUser').value;
+            const p = document.getElementById('adminPass').value;
+
+            if(u === "khankhmdsher@" && p === "khankhmdsher@1") {
+                document.getElementById('adminAuth').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                renderAdminTable();
+            } else {
+                alert("Invalid Credentials! Access Denied.");
+            }
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = "";
+            if(userDatabase.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No records found.</td></tr>`;
+                return;
+            }
+            userDatabase.forEach((item, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${item.photo}" class="img-thumb"></td>
+                        <td><strong>${item.name}</strong></td>
+                        <td>${item.phone}</td>
+                        <td>${item.userId}</td>
+                        <td>${item.timestamp}</td>
+                        <td><button onclick="deleteRecord(${idx})" style="background:var(--accent-red); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filterAdminData() {
+            const q = document.getElementById('adminSearch').value.toLowerCase();
+            document.querySelectorAll('#adminTableBody tr').forEach(r => {
+                r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function deleteRecord(idx) {
+            userDatabase.splice(idx, 1);
+            localStorage.setItem('apg_master_db', JSON.stringify(userDatabase));
+            renderAdminTable();
+        }
+
+        function clearAllData() {
+            if(confirm("Are you sure you want to delete ALL logged records?")) {
+                userDatabase = [];
+                localStorage.removeItem('apg_master_db');
+                renderAdminTable();
+            }
+        }
+
+        function exportCSV() {
+            if(userDatabase.length === 0) { alert("No data to export!"); return; }
+            let csv = "Extracted Name,Phone Number,User ID,Timestamp\n";
+            userDatabase.forEach(r => {
+                csv += `"${r.name}","${r.phone}","${r.userId}","${r.timestamp}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'APG_Master_Records.csv';
+            a.click();
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // Language Translations
+        const translations = {
+            hi: {
+                logoTitle: "ऑफिशियल IMO VIP लोगो जनरेटर",
+                logoSubtitle: "नाम डालकर या स्क्रीनशॉट अपलोड करके तुरंत APG लोगो बनाएं।",
+                upTitle: "IMO प्रोफाइल स्क्रीनशॉट अपलोड करें",
+                lblYourName: "अपना नाम दर्ज करें",
+                lblPrefix: "जेंडर / रोल चुनें",
+                btnCopy: "1-क्लिक कॉपी करें"
+            },
+            en: {
+                logoTitle: "Official IMO VIP Logo Generator",
+                logoSubtitle: "Upload profile screenshot for AI extraction or enter your name manually.",
+                upTitle: "Upload IMO Profile Screenshot",
+                lblYourName: "Enter Member Name",
+                lblPrefix: "Gender / Role Prefix",
+                btnCopy: "1-Click Copy"
+            }
+        };
+
+        function changeLanguage() {
+            const lang = document.getElementById('langSelect').value;
+            const t = translations[lang] || translations.en;
+            for(let key in t) {
+                const el = document.getElementById(key);
+                if(el) el.innerText = t[key];
+            }
+        }
+    </script>
+</body>
+</html>
